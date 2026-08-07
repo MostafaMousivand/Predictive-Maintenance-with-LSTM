@@ -30,13 +30,7 @@ def create_sequences(df, sequence_length):
 
         engine = df[df["engine_id"] == engine_id]
 
-        features = engine.drop(
-            columns=[
-                "engine_id",
-                "cycle",
-                "RUL"
-            ]
-        ).values
+        features = engine.drop(columns=["engine_id", "cycle", "RUL"]).values
 
         target = engine["RUL"].values
 
@@ -58,3 +52,58 @@ def create_sequences(df, sequence_length):
     return np.array(x), np.array(y), np.array(engine_ids)
 
 
+
+
+
+#patchTST model
+import numpy as np
+
+
+def create_patch_sequences(
+        df,
+        sequence_length,
+        patch_length,
+        stride):
+
+    x = []
+    y = []
+
+
+    for engine_id in df["engine_id"].unique():
+
+        engine = df[df["engine_id"] == engine_id]
+
+
+        features = engine.drop(
+            columns=[
+                "engine_id",
+                "cycle",
+                "RUL"
+            ]
+        ).values
+
+
+        target = engine["RUL"].values
+
+
+        # ایجاد پنجره‌های زمانی
+        for i in range(len(engine) - sequence_length + 1):
+            sequence = features[i:i + sequence_length]
+
+            rul = target[i + sequence_length - 1]
+
+            # تبدیل sequence به patch
+            patches = []
+
+            for j in range(0,sequence_length - patch_length + 1,stride):
+
+                patch = sequence[j:j + patch_length]
+
+                patches.append(patch)
+
+            x.append(patches)
+
+            y.append(rul)
+
+
+    return np.array(x), np.array(y)

@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from scipy.stats import linregress
+from sklearn.preprocessing import StandardScaler
 
 
 
@@ -162,3 +163,70 @@ def rolling_std(df, sensor, window=5):
         df[f"{sensor}_rollstd_{window}"] = rolling_values
 
     return df
+
+def normalizes(x_train, x_val):
+  x_train_new = x_train.reshape(-1, 40)
+  x_val_new = x_val.reshape(-1, 40)
+  sc = StandardScaler()
+  x_train_sc = sc.fit_transform(x_train_new)
+  x_val_sc = sc.transform(x_val_new)
+  x_train_sc = x_train_sc.reshape(x_train.shape)
+  x_val_sc = x_val_sc.reshape( x_val.shape)
+  return x_train_sc, x_val_sc
+
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+
+
+def health_index(df):
+
+    sensor_cols = [
+        "sensor_3",
+        "sensor_4",
+        "sensor_9",
+        "sensor_11",
+        "sensor_15",
+        "sensor_17",
+        "sensor_20",
+        "sensor_21"
+    ]
+
+    scaler = StandardScaler()
+
+    sensor_scaled = scaler.fit_transform(
+        df[sensor_cols]
+    )
+
+    pca = PCA(n_components=1)
+
+    health = pca.fit_transform(
+        sensor_scaled
+    )
+
+    df["health_index"] = health.flatten()
+
+    return df
+
+#patchTST model
+
+def normalize_patch(x_train, x_val):
+
+    shape_train = x_train.shape
+    shape_val = x_val.shape
+    # تبدیل به دو بعد
+    x_train_new = x_train.reshape(-1,shape_train[-1])
+
+    x_val_new = x_val.reshape(-1,shape_val[-1])
+
+    scaler = StandardScaler()
+
+    x_train_scaled = scaler.fit_transform( x_train_new)
+
+    x_val_scaled = scaler.transform(x_val_new)
+    # برگرداندن شکل اولیه
+    x_train_scaled = x_train_scaled.reshape(shape_train)
+
+    x_val_scaled = x_val_scaled.reshape(shape_val)
+
+    return x_train_scaled, x_val_scaled
