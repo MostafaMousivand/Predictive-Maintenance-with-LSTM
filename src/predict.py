@@ -52,8 +52,6 @@ def evaluate_model(y_true, y_pred):
     return mae, rmse, r2
 
 
-import pandas as pd
-
 def save_predictions(y_val, y_pred):
     results = pd.DataFrame({"True_RUL": y_val, "Predicted_RUL": y_pred.flatten()})
     results.to_csv("outputs/validation_predictions.csv", index=False)

@@ -18,10 +18,7 @@ def max_min_difference_sensors(df):
         "sensor_4",
         "sensor_9",
         "sensor_11",
-        "sensor_15",
         "sensor_17",
-        "sensor_20",
-        "sensor_21"
     ]
 
     results = []
@@ -79,9 +76,7 @@ def reminder_life(df):
 def decline(df):
 
     sensor_cols = [
-        "sensor_3","sensor_4","sensor_9","sensor_11",
-        "sensor_15","sensor_17","sensor_20","sensor_21"
-    ]
+        "sensor_3","sensor_4","sensor_9","sensor_11","sensor_17"]
 
     results = []
 
@@ -165,8 +160,8 @@ def rolling_std(df, sensor, window=5):
     return df
 
 def normalizes(x_train, x_val):
-  x_train_new = x_train.reshape(-1, 40)
-  x_val_new = x_val.reshape(-1, 40)
+  x_train_new = x_train.reshape(-1, 19)
+  x_val_new = x_val.reshape(-1, 19)
   sc = StandardScaler()
   x_train_sc = sc.fit_transform(x_train_new)
   x_val_sc = sc.transform(x_val_new)
@@ -181,22 +176,11 @@ from sklearn.decomposition import PCA
 
 def health_index(df):
 
-    sensor_cols = [
-        "sensor_3",
-        "sensor_4",
-        "sensor_9",
-        "sensor_11",
-        "sensor_15",
-        "sensor_17",
-        "sensor_20",
-        "sensor_21"
-    ]
+    sensor_cols = ["sensor_3","sensor_4","sensor_9","sensor_11","sensor_17"]
 
     scaler = StandardScaler()
 
-    sensor_scaled = scaler.fit_transform(
-        df[sensor_cols]
-    )
+    sensor_scaled = scaler.fit_transform(df[sensor_cols])
 
     pca = PCA(n_components=1)
 

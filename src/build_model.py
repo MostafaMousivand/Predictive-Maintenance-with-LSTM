@@ -21,22 +21,43 @@ from tensorflow.keras.layers import Layer, Dense, Reshape
 
 
 
-#LSTM model
+#LSTM model1
 def create_model():
     lstm_model = Sequential([
-    LSTM(100 , return_sequences= True, dropout=0.2),
+    LSTM(100, return_sequences=True, dropout= 0.2),
     LSTM(100, dropout= 0.2),
     Dense(1)])
     return lstm_model
 
-def compile_lstm(lstm_model):
-    lstm_model.compile(optimizer= "adam", loss= "mean_squared_error", metrics = ["RootMeanSquaredError"])
+def compile_lstm(lstm_model): 
+    lstm_model.compile(optimizer= "Adam", loss= "mean_squared_error", metrics = ["RootMeanSquaredError"])
     return lstm_model
 
 def fit_lstm(lstm_model, x_train_sc, y_train, x_val_sc, y_val, early_stop):
     history = lstm_model.fit(x_train_sc, y_train, epochs= 25, validation_data = (x_val_sc, y_val), callbacks=[early_stop])
     return history
 
+#LSTM model github
+def create_lstm_github(input_shape):
+    model=Sequential()
+    model.add(LSTM(32,input_shape=input_shape,return_sequences=True))
+    model.add(Dropout(0.1))
+    model.add(LSTM(32,return_sequences=False))
+    model.add(Dropout(0.1))
+    model.add(Dense(16,activation="relu",kernel_initializer="glorot_normal"))
+    model.add(Dropout(0.1))
+    model.add(Dense(8,activation="relu",kernel_initializer="glorot_normal"))
+    model.add(Dropout(0.1))
+    model.add(Dense(1,activation="linear",kernel_initializer="glorot_normal"))
+    return model
+
+def compile_lstm_github(lstm_model):
+    lstm_model.compile(optimizer= "adam", loss= "mean_squared_error", metrics = ["RootMeanSquaredError"])
+    return lstm_model
+
+def fit_lstm_github(lstm_model, x_train_sc, y_train, x_val_sc, y_val, early_stop):
+    history = lstm_model.fit(x_train_sc, y_train, epochs= 50, validation_data = (x_val_sc, y_val), callbacks=[early_stop])
+    return history
 
 #transformer model
 def transformer_encoder(inputs, head_size, num_heads, ff_dim, dropout):
@@ -139,7 +160,7 @@ def transformer_encoder(inputs,embed_dim,num_heads,ff_dim,dropout_rate=0.2):
     # -------- Residual --------
     x = inputs + attention
     # -------- LayerNorm --------
-    y = LayerNormalization(epsilon=1e-6)(x)
+    y = LayerNormalization(epsilon=1e-4)(x)
     # -------- Feed Forward --------
     y = Conv1D(filters=ff_dim,kernel_size=1, activation="gelu")(y)
 
