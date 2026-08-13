@@ -14,36 +14,52 @@ important_sensor = ['sensor_3', 'sensor_4', 'sensor_9', 'sensor_11',
 from config import PATCHTST_EXPERIMENTS
 import numpy as np
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+import joblib
 
 #preprocessing
 df = load_data()
 
 df = null_preprocess(df)
 
-range_df = max_min_difference_sensors(df)
+#ange_df = max_min_difference_sensors(df)
 
-slope_df = decline(df)
+#slope_df = decline(df)
 
 df["RUL"] = reminder_life(df)
 
-df = df.merge(range_df, on="engine_id", how="left")
+#df = df.merge(range_df, on="engine_id", how="left")
 
-df = df.merge(slope_df, on="engine_id", how="left")
+#df = df.merge(slope_df, on="engine_id", how="left")
 
 #df = rolling_mean(df, important_sensor, 5)
 #df = rolling_std(df, important_sensor, 5)
+
 print(df.shape)
+
 train_engines, val_engines = split(df)
 
 train_df, val_df = data_divided(df, train_engines, val_engines)
 
-x_train, y_train, train_engine_ids = create_sequences(train_df, 85)
+x_train, y_train, train_engine_ids = create_sequences(train_df, 120)
 print(x_train.shape)
-x_val, y_val, val_engine_ids = create_sequences(val_df, 85)
+x_val, y_val, val_engine_ids = create_sequences(val_df, 120)
 
 #df = health_index(df)
 
-x_train_sc, x_val_sc = normalizes(x_train, x_val)
+x_train_sc, x_val_sc, sc = normalizes(x_train, x_val)
+joblib.dump(sc, "models/scaler.pkl")
+
+#print("Train feature mean:", x_train.reshape(-1,19).mean(axis=0))
+#print("Train feature std:", x_train.reshape(-1,19).std(axis=0))
+#print(df.drop(columns=["engine_id","cycle","RUL"]).columns.tolist())
+
+
+#create LSTM model1
+lstm_model = create_model()
+early_stop = earlier_stop()
+lstm_model = compile_lstm(lstm_model)
+history = fit_lstm(lstm_model, x_train_sc, y_train, x_val_sc, y_val, early_stop)
+lstm_model.save("models/lstm_model.keras")
 
 
 #create LSTM model github
@@ -54,12 +70,7 @@ x_train_sc, x_val_sc = normalizes(x_train, x_val)
 # lstm_model.save("models/lstm_github_model.keras")
 
 
-#create LSTM model1
-lstm_model = create_model()
-early_stop = earlier_stop()
-lstm_model = compile_lstm(lstm_model)
-history = fit_lstm(lstm_model, x_train_sc, y_train, x_val_sc, y_val, early_stop)
-lstm_model.save("models/lstm_model.keras")
+
 
 
 #create transformer model

@@ -4,22 +4,23 @@ from sklearn.model_selection import train_test_split
 
 
 def split(df):
+
     engine_ids = df["engine_id"].unique()
 
-    train_engines, val_engines = train_test_split(
-        engine_ids,
-        test_size=0.2,
-        random_state=42   
-    )
+    train_engines, val_engines = train_test_split(engine_ids,test_size=0.2,random_state=42)
+
     return train_engines, val_engines
 
 
 def data_divided(df, train_engines, val_engines):
+
     train_df = df[df["engine_id"].isin(train_engines)]
+
     val_df = df[df["engine_id"].isin(val_engines)]
+
     return train_df, val_df
 
-
+#For training data
 def create_sequences(df, sequence_length):
 
     x = []
@@ -34,23 +35,57 @@ def create_sequences(df, sequence_length):
 
         target = engine["RUL"].values
 
-        for i in range(
-            len(engine) - sequence_length + 1
-        ):
+        for i in range(len(engine) - sequence_length + 1):
 
-            x.append(
-                features[i:i+sequence_length]
-            )
+            x.append(features[i:i+sequence_length])
 
-            y.append(
-                target[i+sequence_length-1]
-            )
-            engine_ids.append(
-                engine_id
-            )
+            y.append(target[i+sequence_length-1])
+
+            engine_ids.append(engine_id)
 
     return np.array(x), np.array(y), np.array(engine_ids)
 
+
+#For testing data
+def create_test_sequences(df, sequence_length):
+
+    x = []
+    engine_ids = []
+
+    for engine_id in df["engine_id"].unique():
+
+        engine = df[df["engine_id"] == engine_id]
+
+        features = engine.drop(
+            columns=["engine_id", "cycle"]
+        ).values
+
+        # تعداد سیکل‌های واقعی موتور
+        n_cycles = len(features)
+
+        # اگر موتور حداقل 75 سیکل دارد
+        if n_cycles >= sequence_length:
+
+            sequence = features[-sequence_length:]
+
+        # اگر موتور کمتر از 75 سیکل دارد
+        else:
+
+            padding_size = sequence_length - n_cycles
+
+            # اولین observation واقعی موتور
+            first_observation = features[0:1]
+
+            # تکرار اولین observation برای padding
+            padding = np.repeat(first_observation,padding_size,axis=0)
+
+            # padding در ابتدای sequence قرار می‌گیرد
+            sequence = np.concatenate([padding, features],axis=0)
+
+        x.append(sequence)
+        engine_ids.append(engine_id)
+
+    return np.array(x), np.array(engine_ids)
 
 
 
