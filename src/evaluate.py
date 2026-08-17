@@ -3,13 +3,13 @@ import pandas as pd
 from data_loader import *
 from data_loader import load_test_rul
 from preprocessing import (null_preprocess,max_min_difference_sensors,reminder_life,decline,
-                            health_index,rolling_mean, rolling_std, normalizes,normalize_patch)
+                            health_index,rolling_mean, rolling_std, normalizes, normalize_patch)
 from sequence_generator import (create_sequences, create_test_sequences, split, data_divided, create_patch_sequences)
 from build_model import (create_model, earlier_stop, compile_lstm,
                         fit_lstm,compile_transformer, fit_transformer,
                           PatchEmbedding, PositionEmbedding, transformer_encoder, create_patchTST, compile_patchTST, patchTST_early_stop)
 from predict import (load_trained_model,load_trained_model_patchTST, predict, plot_prediction,
-evaluate_model, save_predictions, prediction2, worst_engine_predict)
+evaluate_model, save_predictions, plot_loss_val_loss, worst_engine_predict)
 important_sensor = ['sensor_3', 'sensor_4', 'sensor_9', 'sensor_11',
                    'sensor_15', 'sensor_17', 'sensor_20', 'sensor_21']
 from config import PATCHTST_EXPERIMENTS
@@ -84,5 +84,16 @@ print(f"RMSE : {rmse:.3f}")
 print(f"R2   : {r2:.3f}")
 
 
-print("Test feature mean:", x_test.reshape(-1,9).mean(axis=0))
-print("Test feature std:", x_test.reshape(-1,9).std(axis=0))
+errors = np.abs(y_test - y_predict)
+print("Mean error:", errors.mean())
+print("Median error:", np.median(errors))
+print("Max error:", errors.max())
+for i in range(20):
+    print(f"Engine {i+1}: Actual={y_test[i]:.1f}, Predicted={y_predict[i]:.1f}, Error={errors[i]:.1f}")
+
+low = y_test <= 30
+medium = (y_test > 30) & (y_test <= 80)
+high = y_test > 80
+print("Low RUL MAE:", mean_absolute_error(y_test[low], y_predict[low]))
+print("Medium RUL MAE:", mean_absolute_error(y_test[medium], y_predict[medium]))
+print("High RUL MAE:", mean_absolute_error(y_test[high], y_predict[high]))

@@ -8,7 +8,7 @@ from build_model import (create_model, earlier_stop, compile_lstm,
                         fit_lstm,compile_transformer, fit_transformer,
                           PatchEmbedding, PositionEmbedding, transformer_encoder, create_patchTST, compile_patchTST, patchTST_early_stop)
 from predict import (load_trained_model,load_trained_model_patchTST, predict, plot_prediction,
-evaluate_model, save_predictions, prediction2, worst_engine_predict)
+evaluate_model, save_predictions, plot_loss_val_loss, worst_engine_predict)
 important_sensor = ['sensor_3', 'sensor_4', 'sensor_9', 'sensor_11',
                    'sensor_15', 'sensor_17', 'sensor_20', 'sensor_21']
 from config import PATCHTST_EXPERIMENTS
@@ -41,8 +41,10 @@ train_engines, val_engines = split(df)
 train_df, val_df = data_divided(df, train_engines, val_engines)
 
 x_train, y_train, train_engine_ids = create_sequences(train_df, 120)
+y_train = np.minimum(y_train, 100)
 print(x_train.shape)
 x_val, y_val, val_engine_ids = create_sequences(val_df, 120)
+y_val = np.minimum(y_val, 100)
 
 #df = health_index(df)
 
@@ -83,7 +85,7 @@ lstm_model.save("models/lstm_model.keras")
 #LSTM prediction 
 model = load_trained_model()
 
-y_pred = predict(lstm_model, x_val_sc)
+y_pred = predict(model, x_val_sc)
 
 print (y_pred)
 
@@ -93,7 +95,7 @@ evaluate_model(y_val, y_pred)
 
 save_predictions(y_val, y_pred)
 
-prediction2(history)
+plot_loss_val_loss(history)
 
 worst_engine_predict(val_engine_ids, y_val, y_pred )
 

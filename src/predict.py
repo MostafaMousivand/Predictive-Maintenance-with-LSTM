@@ -6,6 +6,8 @@ import numpy as np
 from tensorflow.keras.models import load_model
 from build_model import (PatchEmbedding,PositionEmbedding)
 
+
+
 #LSTM model
 def load_trained_model():
 
@@ -30,20 +32,14 @@ def plot_prediction(y_val, y_pred):
     plt.savefig("figures/validation_prediction.png", dpi=300, bbox_inches="tight")
     plt.show()
 
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-import numpy as np
 
+def evaluate_model(y_val, y_pred):
 
-def evaluate_model(y_true, y_pred):
+    mae = mean_absolute_error(y_val,y_pred)
 
-    mae = mean_absolute_error(
-        y_true,
-        y_pred
-    )
+    rmse = np.sqrt(mean_squared_error(y_val, y_pred))
 
-    rmse = np.sqrt(mean_squared_error(y_true, y_pred))
-
-    r2 = r2_score(y_true, y_pred)
+    r2 = r2_score(y_val, y_pred)
 
     print(f"MAE  : {mae:.3f}")
     print(f"RMSE : {rmse:.3f}")
@@ -57,7 +53,7 @@ def save_predictions(y_val, y_pred):
     results.to_csv("outputs/validation_predictions.csv", index=False)
     print("Predictions saved successfully.")
                         
-def prediction2(history):
+def plot_loss_val_loss(history):
     plt.plot(history.history["loss"])
     plt.plot(history.history["val_loss"])
     plt.savefig("figures/validation_prediction.png", dpi=300, bbox_inches="tight")
