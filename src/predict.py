@@ -65,7 +65,24 @@ def worst_engine_predict(val_engine_ids, y_val, y_pred ):
     results = pd.DataFrame({"engine_id": val_engine_ids, "true_RUL": y_val, "pred_RUL": y_pred.flatten()})
     results["error"] = (results["true_RUL"] - results["pred_RUL"])
     results.to_csv("outputs/engine_ids_predictions.csv", index=False)
-    return results   
+    return results
+
+def err(y_test, y_predict):
+    result = []
+    for i in range(100):
+        error_dict = {"engine": i+1}
+
+        error_dict["Actual_y_test"] = y_test[i]
+
+        error_dict["Predicted_y_test"] = y_predict[i] 
+
+        error_dict["error"] = abs( y_test[i]- y_predict[i])
+        if abs( y_test[i]- y_predict[i])>20:
+
+              result.append(error_dict)
+    errors = pd.DataFrame(result)
+    errors.to_csv("outputs/error.csv", index=False)
+    return errors   
 
 
 #patchTST model

@@ -17,10 +17,6 @@ from keras.saving import register_keras_serializable
 from tensorflow.keras.layers import Layer, Dense, Reshape
 
 
-
-
-
-
 #LSTM model1
 def create_model():
     lstm_model = Sequential([
@@ -29,12 +25,20 @@ def create_model():
     Dense(1)])
     return lstm_model
 
+def earlier_stop():    
+    early_stop = EarlyStopping(
+    monitor="val_loss",
+    patience=8,
+    restore_best_weights=True)
+    return early_stop
+
+
 def compile_lstm(lstm_model): 
     lstm_model.compile(optimizer= "Adam", loss= "mean_squared_error", metrics = ["RootMeanSquaredError"])
     return lstm_model
 
 def fit_lstm(lstm_model, x_train_sc, y_train, x_val_sc, y_val, early_stop):
-    history = lstm_model.fit(x_train_sc, y_train, epochs= 25, validation_data = (x_val_sc, y_val), callbacks=[early_stop])
+    history = lstm_model.fit(x_train_sc, y_train, epochs= 50, validation_data = (x_val_sc, y_val), callbacks = [early_stop])
     return history
 
 #LSTM model github
@@ -219,10 +223,5 @@ def patchTST_early_stop():
 
     return EarlyStopping(monitor="val_loss",patience=5,restore_best_weights=True)
 
-def earlier_stop():    
-    early_stop = EarlyStopping(
-    monitor="val_loss",
-    patience=5,
-    restore_best_weights=True)
-    return early_stop
+
 

@@ -21,7 +21,7 @@ df = load_data()
 
 df = null_preprocess(df)
 
-#ange_df = max_min_difference_sensors(df)
+#range_df = max_min_difference_sensors(df)
 
 #slope_df = decline(df)
 
@@ -40,11 +40,11 @@ train_engines, val_engines = split(df)
 
 train_df, val_df = data_divided(df, train_engines, val_engines)
 
-x_train, y_train, train_engine_ids = create_sequences(train_df, 120)
-y_train = np.minimum(y_train, 100)
+x_train, y_train, train_engine_ids = create_sequences(train_df, 50)
+#y_train = np.minimum(y_train, 100)
 print(x_train.shape)
-x_val, y_val, val_engine_ids = create_sequences(val_df, 120)
-y_val = np.minimum(y_val, 100)
+x_val, y_val, val_engine_ids = create_sequences(val_df, 50)
+#y_val = np.minimum(y_val, 100)
 
 #df = health_index(df)
 
@@ -61,7 +61,7 @@ lstm_model = create_model()
 early_stop = earlier_stop()
 lstm_model = compile_lstm(lstm_model)
 history = fit_lstm(lstm_model, x_train_sc, y_train, x_val_sc, y_val, early_stop)
-lstm_model.save("models/lstm_model.keras")
+lstm_model.save("models/lstm_model(seq = 50).keras")
 
 
 #create LSTM model github

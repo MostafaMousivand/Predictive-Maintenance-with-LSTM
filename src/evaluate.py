@@ -9,7 +9,7 @@ from build_model import (create_model, earlier_stop, compile_lstm,
                         fit_lstm,compile_transformer, fit_transformer,
                           PatchEmbedding, PositionEmbedding, transformer_encoder, create_patchTST, compile_patchTST, patchTST_early_stop)
 from predict import (load_trained_model,load_trained_model_patchTST, predict, plot_prediction,
-evaluate_model, save_predictions, plot_loss_val_loss, worst_engine_predict)
+evaluate_model,err, save_predictions, plot_loss_val_loss, worst_engine_predict)
 important_sensor = ['sensor_3', 'sensor_4', 'sensor_9', 'sensor_11',
                    'sensor_15', 'sensor_17', 'sensor_20', 'sensor_21']
 from config import PATCHTST_EXPERIMENTS
@@ -88,8 +88,10 @@ errors = np.abs(y_test - y_predict)
 print("Mean error:", errors.mean())
 print("Median error:", np.median(errors))
 print("Max error:", errors.max())
-for i in range(20):
-    print(f"Engine {i+1}: Actual={y_test[i]:.1f}, Predicted={y_predict[i]:.1f}, Error={errors[i]:.1f}")
+errors = err(y_test, y_predict)
+    
+
+    #print(f"Engine {i+1}: Actual={y_test[i]:.1f}, Predicted={y_predict[i]:.1f}, Error={errors[i]:.1f}")
 
 low = y_test <= 30
 medium = (y_test > 30) & (y_test <= 80)

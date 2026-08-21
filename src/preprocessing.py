@@ -336,8 +336,11 @@ def rolling_std(df_test, sensor, window=5):
     return df_test
 
 def normalizes(x_train, x_val):
-    x_train_new = x_train.reshape(-1, 9)
-    x_val_new = x_val.reshape(-1, 9)
+    shape_x_train_new = x_train.shape
+    shape_x_val_new = x_val.shape
+
+    x_train_new = x_train.reshape(-1, shape_x_train_new[-1])
+    x_val_new = x_val.reshape(-1, shape_x_val_new[-1])
     sc = StandardScaler()
     x_train_sc = sc.fit_transform(x_train_new)
     x_val_sc = sc.transform(x_val_new)
